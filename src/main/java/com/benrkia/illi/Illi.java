@@ -54,7 +54,7 @@ class Illi {
   }
 
   private static void run (String line) {
-    var scanner = new Scanner(line);
+    var scanner = new Lexer(line);
     var tokens = scanner.scanTokens();
     var statements = new Parser(tokens).parse();
 
