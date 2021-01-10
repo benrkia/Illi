@@ -1,0 +1,15 @@
+.vscode/
+.idea/
+out/
+*.iml
+target/
+*.class
+*.log
+*.jar
+.antlr/
+.DS_Store
+
+#########
+#   -   #
+#########
+src/tools
