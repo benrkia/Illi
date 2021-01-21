@@ -9,6 +9,7 @@ abstract class Stmt {
     R visit(Expression stmt);
     R visit(Print stmt);
     R visit(Var stmt);
+    R visit(Vars stmt);
     R visit(Block stmt);
   }
 
@@ -51,6 +52,19 @@ abstract class Stmt {
 
     final Token name;
     final Expr initializer;
+  }
+
+  static class Vars extends Stmt {
+    Vars(List<Stmt> variables) {
+      this.variables = variables;
+    }
+
+    @Override
+    <R> R accept(Visitor<R> visitor) {
+      return visitor.visit(this);
+    }
+
+    final List<Stmt> variables;
   }
 
   static class Block extends Stmt {

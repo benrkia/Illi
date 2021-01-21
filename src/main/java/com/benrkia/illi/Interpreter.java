@@ -9,6 +9,7 @@ interface Interpreter<T> {
 
 class InterpreterImpl implements Interpreter<List<Stmt>>, Expr.Visitor<Object>, Stmt.Visitor<Void> {
   private Environment environment = new Environment();
+  private static final Object uninitialized = new Object();
 
   @Override
   public void interpret (List<Stmt> statements) {
@@ -34,13 +35,18 @@ class InterpreterImpl implements Interpreter<List<Stmt>>, Expr.Visitor<Object>, 
 
   @Override
   public Void visit (Stmt.Var stmt) {
-    Object value = null;
+    environment.define(stmt.name, uninitialized);
 
     if (stmt.initializer != null) {
-      value = evaluate(stmt.initializer);
+      environment.assign(stmt.name, evaluate(stmt.initializer));
     }
 
-    environment.define(stmt.name, value);
+    return null;
+  }
+
+  @Override
+  public Void visit (Stmt.Vars stmt) {
+    stmt.variables.forEach(this::execute);
     return null;
   }
 
@@ -178,7 +184,13 @@ class InterpreterImpl implements Interpreter<List<Stmt>>, Expr.Visitor<Object>, 
 
   @Override
   public Object visit (Expr.Variable expr) {
-    return environment.get(expr.name);
+    var value = environment.get(expr.name);
+
+    if (value == uninitialized) {
+      throw new RuntimeError(expr.name, "Variable '" + expr.name.lexeme + "' might not have been initialized");
+    }
+
+    return value;
   }
 
   private Object evaluate(Expr expr) {

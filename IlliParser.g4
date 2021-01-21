@@ -12,11 +12,14 @@ source
 // Statements
 //
 declaration
-    :   varDeclaration
+    :   varDeclarations
     |   statement
     ;
+varDeclarations
+    :   VAR varDeclaration ( COMMA varDeclaration )* ';'
+    ;
 varDeclaration
-    :   VAR Identifier (ASSIGN expression)? ';'
+    :   Identifier (ASSIGN assignment)?
     ;
 statement
     :   block

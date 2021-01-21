@@ -32,7 +32,7 @@ class Parser {
 
   private Stmt declaration() {
     try {
-      if (match(VAR)) return varDeclaration();
+      if (match(VAR)) return varDeclarations();
 
       return statement();
     } catch (ParseError error) {
@@ -41,15 +41,26 @@ class Parser {
     }
   }
 
+  private Stmt varDeclarations () {
+    List<Stmt> variables = new ArrayList<>();
+
+    variables.add(varDeclaration());
+    while (match(COMMA)) {
+      variables.add(varDeclaration());
+    }
+
+    consume(SEMICOLON, "';' Expected");
+    return new Stmt.Vars(variables);
+  }
+
   private Stmt varDeclaration () {
     var name = consume(IDENTIFIER, "Expect variable name.");
 
     Expr initializer = null;
     if (match(EQUAL)) {
-      initializer = expression();
+      initializer = assignment();
     }
 
-    consume(SEMICOLON, "Expected ';' after expression.");
     return new Stmt.Var(name, initializer);
   }
 
